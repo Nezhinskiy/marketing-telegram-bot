@@ -1,0 +1,19 @@
+--index-url https://${FURY_AUTH}:@pypi.fury.io/nezhinskiy/
+--extra-index-url https://pypi.org/simple/
+bot-managers>=0.0.1049
+logger-tg>=0.1.5
+
+sqlalchemy[asyncio]>=2.0.22, <2.1
+environs>=9.5
+asyncpg>=0.28, <1
+tenacity>=8.2
+aiohttp>=3.8.6, <4
+redis[hiredis]>=5.0.1, <6
+celery>=5.3.4, <6
+python-socks>=2.4.3
+ipython==8.17.2
+httpagentparser>=1.9.5, <2
+psycopg2-binary>=2.9.9, <3
+websockets>=12, <13
+paramiko>=3, <4
+psutil>=5.9.6, <6

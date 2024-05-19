@@ -1,0 +1,72 @@
+version: '3.10'
+name: aio_neural
+
+services:
+  db_aio_offer_bot:
+    image: postgres:15.2-alpine
+    container_name: db_aio_offer_bot
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_offer_bot:/var/lib/postgresql/data
+    env_file:
+      - .env
+    networks:
+      - aio_offer_bot_web
+
+  redis_cache_aio_offer_bot:
+    restart: always
+    image: redis:latest
+    container_name: redis_cache_aio_offer_bot
+    command: redis-server --port 6439 --maxclients 1000 --timeout 30 --tcp-keepalive 300  --maxmemory 1gb --maxmemory-policy allkeys-lru --save ""
+    ports:
+      - "6439:6439"
+    env_file:
+      - .env
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_USERNAME=${REDIS_USERNAME}
+    networks:
+      - aio_offer_bot_web
+
+  redis_aio_offer_bot:
+    restart: always
+    image: redis:latest
+    container_name: redis_aio_offer_bot
+    command: redis-server --port 6733
+    ports:
+      - "6733:6733"
+    networks:
+      - aio_offer_bot_web
+
+  celery_worker_aio_offer_bot:
+    restart: always
+    build:
+      context: ../aio_offer_bot
+      args:
+        FURY_AUTH: ${FURY_AUTH}
+    container_name: celery_worker_aio_offer_bot
+    entrypoint: celery
+    command: -A main:app worker --loglevel=INFO -Q tg_bots -c 7  -n worker_tg_bots
+    env_file:
+      - .env
+    links:
+      - redis_aio_offer_bot
+    depends_on:
+      - redis_aio_offer_bot
+    networks:
+      - aio_offer_bot_web
+    volumes:
+      - ../aio_offer_bot:/aio_offer_bot
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./logger_file.log:/etc/aio_offer_bot/logger_file.log
+
+networks:
+  aio_offer_bot_web:
+    driver: bridge
+
+volumes:
+  db_offer_bot:
+    external:
+      name: infra_db_offer_bot
