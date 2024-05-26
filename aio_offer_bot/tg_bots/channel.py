@@ -41,7 +41,7 @@ class ChannelManager:
                 return resp_json['result']['status']
 
     async def check_via_request(self, async_session: AsyncSessionType) -> bool:
-        self.bot_user = await self.__get_sender(async_session)
+        self.bot_user = await self.__get_bot_user(async_session)
         is_participant = True
         msg = f'tgbot={self.tgbot.tgbot_id}, sender={self.bot_user.tg_id}:'
         try:

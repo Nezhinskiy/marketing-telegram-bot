@@ -6,6 +6,7 @@ from telethon import events
 from db.consts import EMAIL_REGEX
 from db.models.bot_user import BotUser
 from db.session import QueryAsyncSession
+from tg_bots.channel import ChannelManager
 from tg_bots.handlers.base_handlers import BaseHandlers, get_state_checker
 from tg_bots.keyboards.keyboards import (get_answers_keyboard,
                                          get_dating_keyboard,
@@ -96,15 +97,23 @@ class SystemHandlers(BaseHandlers):
             await session.commit()
         return user_answers
 
-    def state_is_valid(self, state, event_id: int) -> bool:
+    async def state_is_valid(
+        self,
+        state,
+        event,
+        client,
+        button: bool = False
+    ) -> bool:
         if not state:
             return False
         if not state.startswith(BotStates.dating):
             self.logger.answer_by_inline('error', f'Wrong state: {state}')
             return False
         dating_msg_id = int(state.split('_')[-2])
-        if dating_msg_id != event_id:
-            self.logger.answer_by_inline('error', f'Wrong dating_msg_id: {state}')
+        if button and dating_msg_id != event._message_id:
+            await client.delete_messages(
+                event.chat_id, message_ids=event._message_id
+            )
             return False
         return True
 
@@ -125,17 +134,18 @@ class SystemHandlers(BaseHandlers):
             next_question_idx = question_idx + 1
             if next_question_idx > len(self.dating_questions):
                 await self.state_machine.reset_state(tgbot, user)
-                success_answer = (
-                    f"{tgbot.dating_success_msg or 'Success'}\n"
-                    f"{user_answers}"
-                )
                 await client.edit_message(
                     event.chat_id,
                     dating_msg_id,
-                    success_answer,
+                    tgbot.dating_success_msg or 'Success',
                     buttons=get_dating_keyboard(tgbot)
                 )
                 await self.reset_user_answers(user)
+                if tgbot.admin_chat_id:
+                    await client.send_message(
+                        int(tgbot.admin_chat_id),
+                        user_answers
+                    )
                 return
             new_question = self.dating_questions[next_question_idx]['question']
             new_answers = self.dating_questions[next_question_idx]['answers']
@@ -180,12 +190,17 @@ class SystemHandlers(BaseHandlers):
             tgbot = await self.get_tgbot_safely()
             user = await self.get_user(event.chat_id, tgbot)
             await self.state_machine.reset_state(tgbot, user)
-            await event.respond(
-                tgbot.lead_magnet_msg or 'Lead magnet',
-                # file=tgbot.lead_magnet_photo if tgbot.welcome_photo else None,
-                buttons=get_lead_magnet_keyboard(tgbot),
-                link_preview=False
-            )
+            if await ChannelManager(tgbot, user.id).check_via_request(self.async_session):
+                await event.respond(
+                    tgbot.lead_magnet_msg or 'Lead magnet',
+                    # file=tgbot.lead_magnet_photo if tgbot.welcome_photo else None,
+                    buttons=get_lead_magnet_keyboard(tgbot),
+                    link_preview=False
+                )
+            else:
+                await event.respond(
+                    f'{tgbot.not_subscribed_channel_msg}\n@{tgbot.channel_name}',
+                )
 
         @client.on(events.CallbackQuery(pattern=b'dating_button'))
         async def dating_handler(event):
@@ -220,8 +235,9 @@ class SystemHandlers(BaseHandlers):
             tgbot = await self.get_tgbot_safely()
             user = await self.get_user(event.chat_id, tgbot)
             state = await self.state_machine.get_state(tgbot, user)
-            if not self.state_is_valid(state):
-                return await self.dating_handler(event)
+            print(f'event dict {event.__dict__}')
+            if not await self.state_is_valid(state, event, client, button=True):
+                return await dating_handler(event)
             dating_msg_id, question_idx = [
                 int(num) for num in state.split('_')
                 if num.isdigit()
@@ -245,7 +261,7 @@ class SystemHandlers(BaseHandlers):
             tgbot = await self.get_tgbot_safely()
             user = await self.get_user(event.chat_id, tgbot)
             state = await self.state_machine.get_state(tgbot, user)
-            if not self.state_is_valid(state):
+            if not await self.state_is_valid(state, event, client):
                 return
             dating_msg_id, question_idx = [
                 int(num) for num in state.split('_')

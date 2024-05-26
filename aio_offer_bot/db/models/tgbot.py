@@ -57,6 +57,7 @@ class TGBot(Base):
     info_msg = mapped_column(Text)
     info_button = mapped_column(String(LENGTH_OF_BUTTON_FIELD), default='')
     lead_magnet_msg = mapped_column(Text)
+    not_subscribed_channel_msg = mapped_column(Text)
     lead_magnet_photo = mapped_column(Text, nullable=True, default=None)
     lead_magnet_button = mapped_column(String(LENGTH_OF_BUTTON_FIELD), default='')
     dating_success_msg = mapped_column(Text)
@@ -80,6 +81,8 @@ class TGBot(Base):
         String(LENGTH_OF_NAME_FIELDS), nullable=True, default=None)
 
     admin_api_key = mapped_column(
+        String(LENGTH_OF_NAME_FIELDS), nullable=True, default=None)
+    admin_chat_id = mapped_column(
         String(LENGTH_OF_NAME_FIELDS), nullable=True, default=None)
 
     created_at = mapped_column(DateTime, default=datetime.utcnow)
