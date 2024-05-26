@@ -22,7 +22,7 @@ jobs:
       - name: Push project to Docker Hub
         uses: docker/build-push-action@v2
         with:
-          context: offer_bot
+          context: aio_offer_bot
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_PROJECT }}:latest
           build-args: FURY_AUTH=${{ secrets.FURY_AUTH }}
