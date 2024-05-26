@@ -14,6 +14,7 @@ from tg_bots.keyboards.keyboards import (get_answers_keyboard,
                                          get_lead_magnet_keyboard,
                                          get_menu_keyboard)
 from tg_bots.state_machine import BotStates
+from pprint import pformat
 
 def dict_to_pretty_string(data):
     return pformat(data, indent=4, width=80)
