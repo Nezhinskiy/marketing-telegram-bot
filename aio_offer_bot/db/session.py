@@ -42,10 +42,10 @@ class QueryAsyncSession(AsyncSession):
         ]
 
     async def filter_by(
-            self,
-            model: Base,
-            filters: dict,
-            load_related: list | None = None
+        self,
+        model: Base,
+        filters: dict,
+        load_related: list | None = None
     ) -> Sequence:
         stmt = select(model)
         if load_related:
@@ -55,10 +55,10 @@ class QueryAsyncSession(AsyncSession):
         return cursor.scalars().all()
 
     async def first(
-            self,
-            model: Base,
-            filters: dict,
-            load_related: list | None = None
+        self,
+        model: Base,
+        filters: dict,
+        load_related: list | None = None
     ) -> Base:
         stmt = select(model)
         if load_related:

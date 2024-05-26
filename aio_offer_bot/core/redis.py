@@ -6,7 +6,6 @@ from redis import Redis as SyncRedis
 from redis.asyncio import Redis as AsyncRedis
 
 from config import REDIS_CACHE_CONFIG, REDIS_LISTENER_DB
-
 from loggers import get_logger
 
 logger = get_logger()

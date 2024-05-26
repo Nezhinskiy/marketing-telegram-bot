@@ -1,11 +1,10 @@
 from aiohttp import ClientSession, client_exceptions
-from sqlalchemy import update, select
+from sqlalchemy import select, update
 
 from core.utils import str_exception
+from db.models.bot_user import BotUser
 from db.session import AsyncSessionType
 from loggers import get_logger
-
-from db.models.bot_user import BotUser
 
 logger = get_logger()
 

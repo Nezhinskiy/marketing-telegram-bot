@@ -9,10 +9,9 @@ from sqlalchemy.orm import selectinload
 from tg_logger import BaseLogger
 
 from db.base import Base
-from db.models import TGBot, DatingQuestion
-from db.session import AsyncSessionType, get_session
-
+from db.models import DatingQuestion, TGBot
 from db.models.bot_user import BotUser
+from db.session import AsyncSessionType, get_session
 
 logger = BaseLogger()
 

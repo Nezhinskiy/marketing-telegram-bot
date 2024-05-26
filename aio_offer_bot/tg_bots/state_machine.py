@@ -4,15 +4,14 @@ from sqlalchemy import update
 from tg_logger import BaseLogger
 
 from core.redis import create_redis_connection, get_listener_redis_params
-
+from db.models.bot_user import BotUser
 from db.models.tgbot import TGBot
 from db.session import AsyncSessionType
-
-from db.models.bot_user import BotUser
 
 
 class BotStates:
     menu = None
+    dating = 'dating'
     answer_questions = 'answer'
 
 

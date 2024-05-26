@@ -1,17 +1,16 @@
 from datetime import datetime
 
-from sqlalchemy import (BigInteger, Boolean, DateTime, ForeignKey,
-                        Integer, String, Text)
+from sqlalchemy import (BigInteger, Boolean, DateTime, ForeignKey, Integer,
+                        String, Text)
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import mapped_column, relationship
 
 from db.base import Base
-from db.consts import (
-                       LENGTH_OF_API_HASH, LENGTH_OF_API_ID, LENGTH_OF_API_KEY,
-                       LENGTH_OF_MESSAGE,
+from db.consts import (LENGTH_OF_API_HASH, LENGTH_OF_API_ID, LENGTH_OF_API_KEY,
+                       LENGTH_OF_BUTTON_FIELD, LENGTH_OF_MESSAGE,
                        LENGTH_OF_NAME_FIELDS, LENGTH_OF_SESSION)
-from db.table_names import (TGBOT_TABLE,
-                            DATINGQUESTION_TABLE, USER_TABLE, BOTUSER_TABLE)
+from db.table_names import (BOTUSER_TABLE, DATINGQUESTION_TABLE, TGBOT_TABLE,
+                            USER_TABLE)
 
 
 class User(Base):
@@ -54,13 +53,19 @@ class TGBot(Base):
     session = mapped_column(String(LENGTH_OF_SESSION))
 
     welcome_message = mapped_column(Text)
+    welcome_photo = mapped_column(Text, nullable=True, default=None)
+    info_msg = mapped_column(Text)
+    info_button = mapped_column(String(LENGTH_OF_BUTTON_FIELD), default='')
+    lead_magnet_msg = mapped_column(Text)
+    lead_magnet_photo = mapped_column(Text, nullable=True, default=None)
+    lead_magnet_button = mapped_column(String(LENGTH_OF_BUTTON_FIELD), default='')
+    dating_success_msg = mapped_column(Text)
+    dating_button = mapped_column(String(LENGTH_OF_BUTTON_FIELD), default='')
 
     name = mapped_column(
         String(LENGTH_OF_NAME_FIELDS), nullable=True, default=None)
     surname = mapped_column(
         String(LENGTH_OF_NAME_FIELDS), nullable=True, default=None)
-
-    welcome_photo = mapped_column(Text, nullable=True, default=None)
 
     tg_username = mapped_column(
         String(LENGTH_OF_NAME_FIELDS), nullable=True, default=None)

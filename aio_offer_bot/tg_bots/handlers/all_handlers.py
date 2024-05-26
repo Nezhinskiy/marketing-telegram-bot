@@ -3,10 +3,10 @@ from typing import List
 
 from tg_logger import BaseLogger
 
-from tg_bots.state_machine import RedisStateMachine
 from db.models.tgbot import TGBot
 from db.session import AsyncSessionType
 from tg_bots.handlers.system_handlers import SystemHandlers
+from tg_bots.state_machine import RedisStateMachine
 
 
 class AllHandlers:

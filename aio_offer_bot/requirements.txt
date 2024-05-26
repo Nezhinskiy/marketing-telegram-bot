@@ -1,6 +1,6 @@
 --index-url https://${FURY_AUTH}:@pypi.fury.io/nezhinskiy/
 --extra-index-url https://pypi.org/simple/
-bot-managers>=0.0.1049
+bot-managers>=0.0.1051
 logger-tg>=0.1.5
 
 sqlalchemy[asyncio]>=2.0.22, <2.1

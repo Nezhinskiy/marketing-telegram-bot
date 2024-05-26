@@ -5,13 +5,12 @@ from typing import Any
 from telethon.tl import types
 from tg_logger import BaseLogger
 
-from tg_bots.channel import ChannelManager
-from tg_bots.state_machine import RedisStateMachine
-
 from db.models.tgbot import TGBot
 from db.session import AsyncSessionType
+from tg_bots.channel import ChannelManager
 from tg_bots.services import (create_dataclass_from_sqlalchemy_obj,
                               get_object_safely)
+from tg_bots.state_machine import RedisStateMachine
 
 
 class BaseHandlers:

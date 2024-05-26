@@ -1,8 +1,9 @@
 from bot_managers import (PatchedTelegramClient, ShuttingDown,
                           TelethonClientManager, TelethonErrorHandler)
 from sqlalchemy import and_, select
-from core.proxy import ProxyManager
+
 from config import SESSION_ROOT
+from core.proxy import ProxyManager
 from db.models.bot_user import BotUser
 from db.models.tgbot import TGBot
 from db.session import AsyncSessionType, get_session
@@ -23,7 +24,7 @@ async def _get_user(
     async with async_session() as session:
         stmt = (
             select(BotUser)
-            .join(TGBot.bot_user)
+            .join(TGBot.bot_users)
             .where(and_(
                 TGBot.tgbot_id == str(tgbot.id),
                 BotUser.tg_id == tg_id,
