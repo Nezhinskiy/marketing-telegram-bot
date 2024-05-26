@@ -3,7 +3,7 @@ import asyncio
 from celery import Celery
 
 app = Celery(
-    'aio_neural',
+    'aio_offer_bot',
     broker='redis://redis_aio_offer_bot:6733',
     backend='redis://redis_aio_offer_bot:6733',
     include=['tg_bots.tasks']
