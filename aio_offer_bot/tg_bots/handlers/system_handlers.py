@@ -30,8 +30,11 @@ class SystemHandlers(BaseHandlers):
     ) -> BotUser | bool:
         user = (await session.filter_by(
             BotUser, dict(tg_id=tg_id, tgbot_id=tgbot.id)
-        ))[0]
-        return user or False
+        ))
+        if user:
+            return user[0]
+        else:
+            return False
 
     async def save_new_user(self, event, tgbot):
         chat_id = event.chat_id
