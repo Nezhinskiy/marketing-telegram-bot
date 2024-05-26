@@ -15,6 +15,9 @@ from tg_bots.keyboards.keyboards import (get_answers_keyboard,
                                          get_menu_keyboard)
 from tg_bots.state_machine import BotStates
 
+def dict_to_pretty_string(data):
+    return pformat(data, indent=4, width=80)
+    
 
 class SystemHandlers(BaseHandlers):
     async def get_user(self, tg_id, tgbot):
@@ -147,7 +150,7 @@ class SystemHandlers(BaseHandlers):
                 if tgbot.admin_chat_id:
                     await client.send_message(
                         int(tgbot.admin_chat_id),
-                        user_answers
+                        dict_to_pretty_string(user_answers)
                     )
                 return
             new_question = self.dating_questions[next_question_idx]['question']
