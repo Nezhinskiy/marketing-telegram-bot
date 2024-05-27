@@ -16,6 +16,7 @@ from tg_bots.keyboards.keyboards import (get_answers_keyboard,
 from tg_bots.state_machine import BotStates
 from pprint import pformat
 
+
 def dict_to_pretty_string(data):
     return pformat(data, indent=4, width=80)
     
@@ -168,6 +169,10 @@ class SystemHandlers(BaseHandlers):
             await client.edit_message(
                 event.chat_id,
                 dating_msg_id,
+                self.dating_questions[question_idx]['question'],
+                buttons=None,
+            )
+            await event.respond(
                 new_question,
                 buttons=buttons,
             )
