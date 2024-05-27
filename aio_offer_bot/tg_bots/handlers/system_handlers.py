@@ -134,7 +134,6 @@ class SystemHandlers(BaseHandlers):
         dating_msg_id,
         tgbot,
         user,
-        is_button=False
     ) -> None:
         dating_msg = await client.get_messages(
             event.chat_id, ids=dating_msg_id
@@ -143,9 +142,7 @@ class SystemHandlers(BaseHandlers):
             next_question_idx = question_idx + 1
             if next_question_idx > len(self.dating_questions):
                 await self.state_machine.reset_state(tgbot, user)
-                await client.edit_message(
-                    event.chat_id,
-                    dating_msg_id,
+                await event.respond(
                     tgbot.dating_success_msg or 'Success',
                     buttons=get_dating_keyboard(tgbot)
                 )
@@ -155,7 +152,6 @@ class SystemHandlers(BaseHandlers):
                         int(tgbot.admin_chat_id),
                         dict_to_pretty_string(user_answers)
                     )
-                return
             new_question = self.dating_questions[next_question_idx]['question']
             new_answers = self.dating_questions[next_question_idx]['answers']
             await self.state_machine.set_state(
@@ -166,14 +162,6 @@ class SystemHandlers(BaseHandlers):
                 buttons = get_answers_keyboard(new_answers)
             else:
                 buttons = None
-            print(f'{buttons=}')
-            if is_button:
-                await client.edit_message(
-                    event.chat_id,
-                    dating_msg_id,
-                    self.dating_questions[question_idx]['question'],
-                    buttons=None,
-                )
             await event.respond(
                 new_question,
                 buttons=buttons,
@@ -261,13 +249,20 @@ class SystemHandlers(BaseHandlers):
                 user, question_idx, answer_idx
             )
 
+            await client.edit_message(
+                event.chat_id,
+                dating_msg_id,
+                self.dating_questions[question_idx]['question'],
+                buttons=None,
+            )
+
             await event.reply(
                 self.dating_questions[question_idx]['answers'][answer_idx]
             )
 
             await self.reply_to_answer(
                 client, event, question_idx, user_answers, dating_msg_id,
-                tgbot, user, is_button=True
+                tgbot, user
             )
 
         @client.on(events.NewMessage(
