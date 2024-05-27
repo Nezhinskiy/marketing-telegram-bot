@@ -113,6 +113,7 @@ class SystemHandlers(BaseHandlers):
         button: bool = False
     ) -> bool:
         if not state:
+            print('state is None')
             return False
         if not state.startswith(BotStates.dating):
             self.logger.answer_by_inline('error', f'Wrong state: {state}')
@@ -152,19 +153,20 @@ class SystemHandlers(BaseHandlers):
                         int(tgbot.admin_chat_id),
                         dict_to_pretty_string(user_answers)
                     )
+                return
             new_question = self.dating_questions[next_question_idx]['question']
             new_answers = self.dating_questions[next_question_idx]['answers']
-            await self.state_machine.set_state(
-                f'{BotStates.dating}_{dating_msg_id}_{next_question_idx}',
-                tgbot, user
-            )
             if new_answers and new_answers[0]:
                 buttons = get_answers_keyboard(new_answers)
             else:
                 buttons = None
-            await event.respond(
+            new_dating_msg = await event.respond(
                 new_question,
                 buttons=buttons,
+            )
+            await self.state_machine.set_state(
+                f'{BotStates.dating}_{new_dating_msg.id}_{next_question_idx}',
+                tgbot, user
             )
         else:
             self.logger.answer_by_inline(
