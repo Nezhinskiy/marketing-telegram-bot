@@ -133,7 +133,8 @@ class SystemHandlers(BaseHandlers):
         user_answers,
         dating_msg_id,
         tgbot,
-        user
+        user,
+        is_button=False
     ) -> None:
         dating_msg = await client.get_messages(
             event.chat_id, ids=dating_msg_id
@@ -166,12 +167,13 @@ class SystemHandlers(BaseHandlers):
             else:
                 buttons = None
             print(f'{buttons=}')
-            await client.edit_message(
-                event.chat_id,
-                dating_msg_id,
-                self.dating_questions[question_idx]['question'],
-                buttons=None,
-            )
+            if is_button:
+                await client.edit_message(
+                    event.chat_id,
+                    dating_msg_id,
+                    self.dating_questions[question_idx]['question'],
+                    buttons=None,
+                )
             await event.respond(
                 new_question,
                 buttons=buttons,
@@ -259,9 +261,13 @@ class SystemHandlers(BaseHandlers):
                 user, question_idx, answer_idx
             )
 
+            await event.reply(
+                self.dating_questions[question_idx]['answers'][answer_idx]
+            )
+
             await self.reply_to_answer(
                 client, event, question_idx, user_answers, dating_msg_id,
-                tgbot, user
+                tgbot, user, is_button=True
             )
 
         @client.on(events.NewMessage(
