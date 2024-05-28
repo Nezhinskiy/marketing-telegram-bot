@@ -289,12 +289,16 @@ class SystemHandlers(BaseHandlers):
                 user, question_idx, event.text
             )
 
-            await client.edit_message(
-                event.chat_id,
-                dating_msg_id,
-                self.dating_questions[question_idx]['question'],
-                buttons=None,
+            dating_msg = await client.get_messages(
+                event.chat_id, ids=dating_msg_id
             )
+            if dating_msg.buttons:
+                await client.edit_message(
+                    event.chat_id,
+                    dating_msg_id,
+                    self.dating_questions[question_idx]['question'],
+                    buttons=None,
+                )
 
             await self.reply_to_answer(
                 client, event, question_idx, user_answers, dating_msg_id,
