@@ -288,6 +288,14 @@ class SystemHandlers(BaseHandlers):
             user_answers = await self.save_user_hand_write_answer(
                 user, question_idx, event.text
             )
+
+            await client.edit_message(
+                event.chat_id,
+                dating_msg_id,
+                self.dating_questions[question_idx]['question'],
+                buttons=None,
+            )
+
             await self.reply_to_answer(
                 client, event, question_idx, user_answers, dating_msg_id,
                 tgbot, user
