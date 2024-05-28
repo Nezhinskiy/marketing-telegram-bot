@@ -92,14 +92,17 @@ class SystemHandlers(BaseHandlers):
     async def save_user_hand_write_answer(self, user, question_idx, answer):
         user_answers = user.dating_answers
         question = self.dating_questions[question_idx]['question']
+        user_answers[question] = answer
+        update_values = {'dating_answers': user_answers}
         email_match = re.search(EMAIL_REGEX, answer)
         email = email_match.group(0) if email_match else None
+        if email is not None:
+            update_values['email'] = email
         async with self.async_session() as session:
-            user_answers[question] = answer
             stmt = (
                 update(BotUser)
                 .where(BotUser.id == user.id)
-                .values(dating_answers=user_answers, email=email)
+                .values(**update_values)
             )
             await session.execute(stmt)
             await session.commit()
