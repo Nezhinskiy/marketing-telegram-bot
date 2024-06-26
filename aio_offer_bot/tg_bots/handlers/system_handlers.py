@@ -221,11 +221,7 @@ class SystemHandlers(BaseHandlers):
             user = await self.get_user(event.chat_id, tgbot)
             await self.reset_user_answers(user)
             question_idx = 1
-            try:
-                first_question = self.dating_questions[question_idx]['question']
-            except KeyError:
-                self.logger.dating_handler('error', f'{self.dating_questions=}')
-                raise
+            first_question = self.dating_questions[question_idx]['question']
             answers = self.dating_questions[question_idx]['answers']
             if answers:
                 buttons = get_answers_keyboard(answers)
