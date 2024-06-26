@@ -1,4 +1,5 @@
 import re
+from pprint import pformat
 
 from sqlalchemy import update
 from telethon import events
@@ -14,7 +15,6 @@ from tg_bots.keyboards.keyboards import (get_answers_keyboard,
                                          get_lead_magnet_keyboard,
                                          get_menu_keyboard)
 from tg_bots.state_machine import BotStates
-from pprint import pformat
 
 
 def dict_to_pretty_string(data):
@@ -221,7 +221,11 @@ class SystemHandlers(BaseHandlers):
             user = await self.get_user(event.chat_id, tgbot)
             await self.reset_user_answers(user)
             question_idx = 1
-            first_question = self.dating_questions[question_idx]['question']
+            try:
+                first_question = self.dating_questions[question_idx]['question']
+            except KeyError:
+                self.logger.dating_handler('error', f'{self.dating_questions=}')
+                raise
             answers = self.dating_questions[question_idx]['answers']
             if answers:
                 buttons = get_answers_keyboard(answers)

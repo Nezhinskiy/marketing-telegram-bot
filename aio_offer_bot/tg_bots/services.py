@@ -5,7 +5,6 @@ from typing import Any, List, Tuple
 
 from sqlalchemy import and_, select
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import selectinload
 from tg_logger import BaseLogger
 
 from db.base import Base
@@ -130,4 +129,5 @@ async def get_dating_questions_dict(
             'question': dataclass_question.question,
             'answers': dataclass_question.answers
         }
+    logger.info(f'{questions_dict=}')
     return questions_dict
