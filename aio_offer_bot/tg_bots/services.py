@@ -120,12 +120,12 @@ async def get_tgbot_dating_questions(
 async def get_dating_questions_dict(
     async_session: AsyncSessionType,
     tgbot: TGBot
-) -> dict[str, Any]:
+) -> dict[int, Any]:
     questions = await get_tgbot_dating_questions(async_session, tgbot)
     questions_dict = {}
-    for question in questions:
+    for i, question in enumerate(questions):
         dataclass_question = create_dataclass_from_sqlalchemy_obj(question)
-        questions_dict[dataclass_question.id] = {
+        questions_dict[i] = {
             'question': dataclass_question.question,
             'answers': dataclass_question.answers
         }
